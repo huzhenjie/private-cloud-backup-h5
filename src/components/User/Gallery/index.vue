@@ -1,11 +1,11 @@
 <template>
   <div style="padding: 2px">
     <v-row no-gutters>
-<!--      <v-col cols="3" v-for="i in 30" :key="i" style="padding: 2px">-->
-<!--        <v-img src="https://picsum.photos/500/300"/>-->
-<!--      </v-col>-->
-      <v-col cols="3" v-for="(item, index) in imgs" :key="index" style="padding: 2px">
-        <v-img :src="item.src"/>
+      <!--      <v-col cols="3" v-for="i in 30" :key="i" style="padding: 2px">-->
+      <!--        <v-img src="https://picsum.photos/500/300"/>-->
+      <!--      </v-col>-->
+      <v-col v-for="(item, index) in imgs" :key="index" cols="3" style="padding: 2px">
+        <v-img :src="item.src" />
       </v-col>
     </v-row>
   </div>
