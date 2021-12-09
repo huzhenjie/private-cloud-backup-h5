@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-app-bar app elevate-on-scroll>
+    <v-app-bar app elevate-on-scroll dense>
       <v-app-bar-nav-icon @click="drawer = !drawer" />
       <v-toolbar-title>Gallery</v-toolbar-title>
       <v-spacer />
@@ -8,7 +8,7 @@
         <v-icon dense class="mr-1">mdi-tray-arrow-up</v-icon>
         Upload
       </v-btn>
-      <input ref="upload" type="file" class="d-none" accept="image/*" @change="onUploadChange">
+      <input ref="upload" type="file" class="d-none" accept="image/*" multiple @change="onUploadChange">
       <!--      <v-file-input-->
       <!--        ref="upload"-->
       <!--        @change="onUploadChange"-->
@@ -39,14 +39,18 @@
     </v-navigation-drawer>
     <v-main>
       <router-view />
+      <upload-list-dlg ref="uploadDlg" />
     </v-main>
   </div>
 </template>
 
 <script>
+import UploadListDlg from '@/components/User/Gallery/UploadListDlg'
 import { getImageInfo } from '@/utils'
+
 export default {
   name: 'UserContainer',
+  components: { UploadListDlg },
   data() {
     return {
       drawer: false
@@ -57,6 +61,9 @@ export default {
       console.log(f.target.files)
       const imgInfo = await getImageInfo(f.target.files[0])
       console.log(imgInfo)
+    },
+    showUploadDlg() {
+      this.$refs.uploadDlg.showDlg()
     }
   }
 }
