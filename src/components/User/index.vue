@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <v-responsive min-height="100%">
     <v-app-bar app elevate-on-scroll dense>
       <v-app-bar-nav-icon @click="drawer = !drawer" />
       <v-toolbar-title>Gallery</v-toolbar-title>
@@ -37,16 +37,17 @@
     >
       <!--  -->
     </v-navigation-drawer>
-    <v-main>
+    <v-main class="fill-height">
       <router-view />
       <upload-list-dlg ref="uploadDlg" />
     </v-main>
-  </div>
+  </v-responsive>
 </template>
 
 <script>
 import UploadListDlg from '@/components/User/Gallery/UploadListDlg'
-import { getImageInfo } from '@/utils'
+import FileApi from '@/apis/file'
+import { getFileInfo } from '@/utils'
 
 export default {
   name: 'UserContainer',
@@ -58,9 +59,30 @@ export default {
   },
   methods: {
     async onUploadChange(f) {
-      console.log(f.target.files)
-      const imgInfo = await getImageInfo(f.target.files[0])
-      console.log(imgInfo)
+      const { files } = f.target
+      if (files.length === 0) {
+        this.showUploadDlg()
+        return
+      }
+      const file_info_list = []
+      const file_list = []
+      for (const file of files) {
+        const file_info = await getFileInfo(file)
+        file_info_list.push(file_info)
+        file_list.push(file)
+      }
+      const res = await FileApi.applyUpload(file_info_list)
+      const apply_infos = res.data
+      for (const file of file_list) {
+        const i = file_list.indexOf(file)
+        const { chunks, id } = apply_infos[i]
+        for (const { chunk_size, offset, upload_url } of chunks) {
+          const chunk_file = file.slice(offset, chunk_size)
+          await FileApi.upload(upload_url, chunk_file)
+        }
+        await FileApi.uploadCombine(id)
+      }
+      this.$refs.upload.value = ''
     },
     showUploadDlg() {
       this.$refs.uploadDlg.showDlg()

@@ -4,6 +4,7 @@
       absolute
       permanent
       right
+      color="grey lighten-4"
     >
       <template v-slot:prepend>
         <v-toolbar
@@ -33,9 +34,13 @@
           <!--          </v-toolbar-items>-->
         </v-toolbar>
       </template>
-
-      <v-divider />
-
+      <v-subheader>
+        上传中
+      </v-subheader>
+      <v-list three-line />
+      <v-subheader>
+        已完成
+      </v-subheader>
       <v-list dense />
     </v-navigation-drawer>
   </div>
@@ -51,6 +56,7 @@ export default {
   },
   methods: {
     showDlg() {
+      console.log('xxx')
       this.dialog = true
     }
   }
