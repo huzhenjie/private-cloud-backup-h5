@@ -1,11 +1,8 @@
 <template>
   <div style="padding: 2px">
     <v-row no-gutters>
-      <!--      <v-col cols="3" v-for="i in 30" :key="i" style="padding: 2px">-->
-      <!--        <v-img src="https://picsum.photos/500/300"/>-->
-      <!--      </v-col>-->
-      <v-col v-for="(item, index) in imgs" :key="index" cols="3" style="padding: 2px">
-        <v-img :src="item.src" height="250">
+      <v-col v-for="(item, index) in items" :key="index" cols="3" style="padding: 2px">
+        <v-img :src="item.file_url" height="250" @click="showImg(item)" @contextmenu="showMenu($event, item)">
           <template v-slot:placeholder>
             <v-row
               class="fill-height ma-0"
@@ -22,45 +19,66 @@
         </v-img>
       </v-col>
     </v-row>
+    <img-dlg ref="imgDlg" />
+    <img-menu ref="imgMenu" />
   </div>
 </template>
 
 <script>
+import FileApi from '@/apis/file'
+import ImgMenu from '@/components/User/Gallery/ImgMenu'
+import ImgDlg from '@/components/User/Gallery/ImgDlg'
 export default {
   name: 'Gallery',
+  components: { ImgDlg, ImgMenu },
   data() {
+    const host = process.env.VUE_APP_BASE_API.substr(0, process.env.VUE_APP_BASE_API.length - 1)
     return {
-      imgs: [
-        {
-          src: 'https://via.placeholder.com/500x300',
-          // src: 'https://picsum.photos/500/300',
-          width: 500,
-          height: 300
-        },
-        {
-          // src: 'https://picsum.photos/1920/1080',
-          src: 'https://via.placeholder.com/1920x1080',
-          width: 1920,
-          height: 1080
-        },
-        {
-          // src: 'https://picsum.photos/1060/2240',
-          src: 'https://via.placeholder.com/1060x2240',
-          width: 1060,
-          height: 2240
-        },
-        {
-          // src: 'https://picsum.photos/100/100',
-          src: 'https://via.placeholder.com/100x100',
-          width: 100,
-          height: 100
-        }
-      ]
+      loading: false,
+      query: {
+        host,
+        last_id: 0,
+        last_file_time: 0
+      },
+      items: []
     }
   },
   created() {
-    // const viewWidth = 100
-    // const rowHeight = 24
+    this.init()
+  },
+  methods: {
+    init() {
+      Object.assign(this.query, {
+        last_id: 0,
+        last_file_time: 0
+      })
+      this.getImgList()
+    },
+    getImgList() {
+      this.loading = true
+      const { last_id, last_file_time } = this.query
+      FileApi.getImgList(last_id, last_file_time).then(res => {
+        this.loading = false
+        const { items, last_file_time, last_id } = res.data
+        this.items = items.map(item => {
+          item.file_url = this.query.host + item.file_url
+          return item
+        })
+        Object.assign(this.query, {
+          last_file_time,
+          last_id
+        })
+      })
+    },
+    showImg(img) {
+      this.$refs.imgDlg.showDlg(img)
+    },
+    showMenu(e, item) {
+      e.preventDefault()
+      this.$nextTick(() => {
+        this.$refs.imgMenu.showMenu(e.clientX, e.clientY, item)
+      })
+    }
   }
 }
 </script>

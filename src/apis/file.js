@@ -15,5 +15,13 @@ export default {
   },
   uploadCombine(id) {
     return req.post(`/api/v1/file/h5/upload/${id}/combine`)
+  },
+  getImgList(last_id, last_file_time) {
+    return req.get('/api/v1/file/h5/img', {
+      params: {
+        last_id,
+        last_file_time
+      }
+    })
   }
 }
