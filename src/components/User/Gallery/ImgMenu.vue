@@ -7,10 +7,10 @@
     offset-y
   >
     <v-list dense>
-      <v-list-item link>
+      <v-list-item link @click="downloadImg">
         <v-list-item-title>下载图片</v-list-item-title>
       </v-list-item>
-      <v-list-item link>
+      <v-list-item link @click="delImg">
         <v-list-item-title>删除图片</v-list-item-title>
       </v-list-item>
     </v-list>
@@ -18,6 +18,7 @@
 </template>
 
 <script>
+import FileApi from '@/apis/file'
 export default {
   name: 'ImgMenu',
   data() {
@@ -34,6 +35,14 @@ export default {
       this.y = y
       this.img = img
       this.show = true
+    },
+    delImg() {
+      FileApi.delFile(this.img.id).then(() => {
+        this.$emit('remove', this.img)
+      })
+    },
+    downloadImg() {
+      window.open(this.img.file_url, '_blank')
     }
   }
 }

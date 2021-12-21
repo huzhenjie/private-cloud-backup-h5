@@ -20,7 +20,7 @@
       </v-col>
     </v-row>
     <img-dlg ref="imgDlg" />
-    <img-menu ref="imgMenu" />
+    <img-menu ref="imgMenu" @remove="init" />
   </div>
 </template>
 
