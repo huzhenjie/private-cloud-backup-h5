@@ -16,7 +16,12 @@ Router.prototype.push = function push(location) {
 export default new Router({
   mode: 'hash',
   routes: [
-    UserRoute
+    UserRoute,
+    {
+      path: '/register',
+      name: 'Register',
+      component: () => import('@/components/User/Register')
+    }
     // { path: '*', redirect: '/error/404' }
   ]
 })
