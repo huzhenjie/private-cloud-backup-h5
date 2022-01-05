@@ -113,16 +113,20 @@ export default {
         return
       }
       if (this.password !== this.confirm_password) {
+        this.$store.dispatch('toast/error', 'Password and Confirm Password are not same')
         return
       }
+      this.loading = true
       register({
         username: this.username,
         nick: this.nick,
         pwd: this.password
       }).then(res => {
-        console.log(res)
+        this.loading = false
+        this.$store.dispatch('toast/success', 'Register Success')
       }).catch(e => {
-        console.error(e.message)
+        this.loading = false
+        this.$store.dispatch('toast/error', e.message)
       })
     }
   }
