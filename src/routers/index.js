@@ -21,6 +21,11 @@ export default new Router({
       path: '/register',
       name: 'Register',
       component: () => import('@/components/User/Register')
+    },
+    {
+      path: '/login',
+      name: 'Login',
+      component: () => import('@/components/User/Login')
     }
     // { path: '*', redirect: '/error/404' }
   ]

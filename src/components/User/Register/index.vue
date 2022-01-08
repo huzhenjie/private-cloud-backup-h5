@@ -3,7 +3,7 @@
     <v-card-title>
       Create your Primary Cloud Account
     </v-card-title>
-    <v-card-text>
+    <v-card-text class="mt-4">
       <v-form
         ref="form"
         v-model="valid"
@@ -72,7 +72,7 @@
         color="primary"
         text
         class="text-none"
-        @click="register"
+        @click="gotoLogin"
       >
         Sign in instead
       </v-btn>
@@ -101,7 +101,7 @@ export default {
       loading: false,
       show_password: false,
       nick: '',
-      username: '',
+      username: this.$route.params.username || '',
       password: '',
       confirm_password: ''
     }
@@ -127,6 +127,14 @@ export default {
       }).catch(e => {
         this.loading = false
         this.$store.dispatch('toast/error', e.message)
+      })
+    },
+    gotoLogin() {
+      this.$router.push({
+        name: 'Login',
+        params: {
+          username: this.username
+        }
       })
     }
   }
