@@ -8,10 +8,10 @@
   >
     <v-list dense>
       <v-list-item link @click="downloadImg">
-        <v-list-item-title>下载图片</v-list-item-title>
+        <v-list-item-title>Download</v-list-item-title>
       </v-list-item>
       <v-list-item link @click="delImg">
-        <v-list-item-title>删除图片</v-list-item-title>
+        <v-list-item-title>Delete</v-list-item-title>
       </v-list-item>
     </v-list>
   </v-menu>
