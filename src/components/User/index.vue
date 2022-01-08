@@ -4,7 +4,7 @@
       <v-app-bar-nav-icon @click="drawer = !drawer" />
       <v-toolbar-title>Gallery</v-toolbar-title>
       <v-spacer />
-      <v-btn text color="grey darken-2" @click="$refs.upload.click()">
+      <v-btn text color="grey darken-2" class="text-none" @click="$refs.upload.click()">
         <v-icon dense class="mr-1">mdi-tray-arrow-up</v-icon>
         Upload
       </v-btn>
@@ -54,7 +54,8 @@ export default {
   components: { UploadListDlg },
   data() {
     return {
-      drawer: false
+      drawer: false,
+      uploading: false
     }
   },
   methods: {
@@ -64,6 +65,7 @@ export default {
         this.showUploadDlg()
         return
       }
+      this.uploading = true
       const file_info_list = []
       const file_list = []
       for (const file of files) {
@@ -71,18 +73,34 @@ export default {
         file_info_list.push(file_info)
         file_list.push(file)
       }
-      const res = await FileApi.applyUpload(file_info_list)
-      const apply_infos = res.data
-      for (const file of file_list) {
-        const i = file_list.indexOf(file)
-        const { chunks, id } = apply_infos[i]
-        for (const { chunk_size, offset, upload_url } of chunks) {
-          const chunk_file = file.slice(offset, chunk_size)
-          await FileApi.upload(upload_url, chunk_file)
+      let success_count = 0
+      try {
+        const res = await FileApi.applyUpload(file_info_list)
+        const apply_infos = res.data
+        let fail_count = 0
+        for (const file of file_list) {
+          const i = file_list.indexOf(file)
+          const { chunks, id } = apply_infos[i]
+          for (const { chunk_size, offset, upload_url } of chunks) {
+            const chunk_file = file.slice(offset, offset + chunk_size)
+            await FileApi.upload(upload_url, chunk_file)
+          }
+          const { code, msg } = await FileApi.uploadCombine(id)
+          if (code === 200) {
+            success_count++
+          } else {
+            fail_count++
+            await this.$store.dispatch('toast/error', msg)
+          }
         }
-        await FileApi.uploadCombine(id)
+        this.uploading = false
+        await this.$store.dispatch('toast/info', `Success: ${success_count}, Fail: ${fail_count}`)
+      } catch (e) {
+        await this.$store.dispatch('toast/error', e.message)
+      } finally {
+        this.$refs.upload.value = ''
+        // if (success_count > 0) { }
       }
-      this.$refs.upload.value = ''
     },
     showUploadDlg() {
       this.$refs.uploadDlg.showDlg()
