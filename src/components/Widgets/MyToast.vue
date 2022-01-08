@@ -1,36 +1,48 @@
 <template>
   <v-snackbar
-    v-model="$store.state.toast.show"
-    :timeout="$store.state.toast.timeout"
-    :color="$store.state.toast.color"
-    center
-    :top="$store.state.toast.align==='top'"
-    :left="$store.state.toast.align==='left'"
-    :right="$store.state.toast.align==='right'"
-    :bottom="$store.state.toast.align==='bottom'"
-    :centered="$store.state.toast.align==='centered'"
+    v-model="toast.show"
+    :timeout="toast.timeout"
+    :color="toast.color"
+    :top="toast.align === 'top'"
+    :left="toast.align === 'left'"
+    :right="toast.align === 'right'"
+    :bottom="toast.align === 'bottom'"
+    :centered="toast.align === 'center'"
     multi-line
     text
     outlined
   >
     <p class="mb-0">
-      <v-icon v-if="$store.state.toast.color === 'success'" color="success" class="mr-2">
-        mdi-check-circle
-      </v-icon>
-      <v-icon v-else-if="$store.state.toast.color === 'error'" color="error" class="mr-2">
-        mdi-alert-octagon
-      </v-icon>
-      <v-icon v-else-if="$store.state.toast.color === 'warning'" color="warning" class="mr-2">
-        mdi-alert
-      </v-icon>
-      {{ $store.state.toast.msg }}
+      <v-icon :color="iconColor" class="mr-2" v-text="icon" />
+      {{ toast.msg }}
     </p>
   </v-snackbar>
 </template>
 
 <script>
 export default {
-  name: 'MyToast'
+  name: 'MyToast',
+  computed: {
+    toast() {
+      return this.$store.state.toast
+    },
+    iconColor() {
+      return this.toast.color || 'info'
+    },
+    icon() {
+      switch (this.iconColor) {
+        case 'success':
+          return 'mdi-check-circle'
+        case 'error':
+          return 'mdi-alert-octagon-outline'
+        case 'warning':
+          return 'mdi-alert-outline'
+        case 'info':
+        default:
+          return 'mdi-information-outline'
+      }
+    }
+  }
 }
 </script>
 
