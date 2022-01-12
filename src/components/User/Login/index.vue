@@ -20,11 +20,13 @@
               :rules="[ Rule.required ]"
               outlined
               required
+              clearable
               @keyup.enter="login"
             />
           </v-col>
           <v-col cols="12">
             <v-text-field
+              ref="password"
               v-model="password"
               label="Password"
               :type="show_password ? 'text' : 'password'"
@@ -63,19 +65,38 @@
 
 <script>
 import Rule from '@/rules'
+import { getStorageStr } from '@/utils/storage'
 export default {
   name: 'Login',
   data() {
     return {
       Rule,
       valid: false,
+      loading: false,
       show_password: false,
-      username: this.$route.params.username || '',
+      username: this.$route.params.username || getStorageStr('username') || '',
       password: ''
     }
   },
+  mounted() {
+    if (this.username) {
+      this.$refs.password.focus()
+    }
+  },
   methods: {
-    login() { },
+    login() {
+      this.loading = true
+      this.$store.dispatch('account/login', {
+        username: this.username,
+        pwd: this.password
+      }).then(() => {
+        this.loading = false
+        this.$router.replace({ name: 'Gallery' })
+      }).catch(e => {
+        this.loading = false
+        this.$store.dispatch('toast/error', e.message)
+      })
+    },
     gotoRegister() {
       this.$router.push({
         name: 'Register',
