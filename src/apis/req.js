@@ -1,4 +1,5 @@
 import axios from 'axios'
+import store from '@/stores'
 
 const service = axios.create({
   baseURL: process.env.VUE_APP_BASE_API, // url = base url + request url
@@ -7,7 +8,9 @@ const service = axios.create({
 
 service.interceptors.request.use(
   config => {
-    // config.headers['Authorization'] = authorization
+    const { uid, access_token } = store.state.account
+    config.headers['Authorization'] = access_token
+    config.headers['X-UID'] = uid
     return config
   },
   error => {
