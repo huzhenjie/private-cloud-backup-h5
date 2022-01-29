@@ -38,7 +38,7 @@
       <!--  -->
     </v-navigation-drawer>
     <v-main class="fill-height">
-      <router-view />
+      <router-view ref="routerView" />
       <upload-list-dlg ref="uploadDlg" />
     </v-main>
   </v-responsive>
@@ -94,7 +94,25 @@ export default {
           }
         }
         this.uploading = false
-        await this.$store.dispatch('toast/info', `Success: ${success_count}, Fail: ${fail_count}`)
+        let toast_tip = ''
+        let toast_type = 'success'
+        if (success_count > 0) {
+          toast_tip = `Success: ${success_count}`
+          const route_view_init = this.$refs.routerView.init
+          route_view_init && route_view_init()
+        }
+        if (fail_count > 0) {
+          if (toast_tip) {
+            toast_tip += ', '
+            toast_type = 'warning'
+          } else {
+            toast_type = 'error'
+          }
+          toast_tip = `${toast_tip}Fail: ${fail_count}`
+        }
+        if (toast_tip) {
+          await this.$store.dispatch('toast/' + toast_type, toast_tip)
+        }
       } catch (e) {
         await this.$store.dispatch('toast/error', e.message)
       } finally {
